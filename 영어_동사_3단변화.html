@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1a1a">
+  <title>영어 동사 3단 변화</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #0f0f0f;
+  --surface: #1a1a1a;
+  --surface-hover: #242424;
+  --border: #2a2a2a;
+  --text: #e8e8e8;
+  --text-muted: #888;
+  --accent: #4a9eff;
+  --accent-hover: #6bb0ff;
+  --danger: #e85a5a;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+  --safe-right: env(safe-area-inset-right);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{font-size:16px;-webkit-text-size-adjust:100%;}
+body{margin:0;min-height:100vh;min-height:100dvh;font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);}
+.app{max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding:0 16px 24px;padding-left:max(16px,var(--safe-left));padding-right:max(16px,var(--safe-right));padding-bottom:max(24px,var(--safe-bottom));}
+.header{padding:24px 0 20px;text-align:center;border-bottom:1px solid var(--border);}
+.header h1{margin:0;font-size:1.5rem;font-weight:600;letter-spacing:-0.02em;}
+.subtitle{margin:6px 0 0;font-size:0.875rem;color:var(--text-muted);font-weight:400;}
+.main{flex:1;padding:20px 0;}
+.hidden{display:none !important;}
+.test-section{margin-bottom:16px;}
+.btn-test{width:100%;background:var(--accent);color:#fff;padding:14px 20px;font-family:inherit;font-size:0.9375rem;font-weight:500;border:none;border-radius:var(--radius);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.btn-test:hover,.btn-test:focus-visible{background:var(--accent-hover);}
+.modal-test .test-content{padding:20px;}
+.test-intro{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:200px;}
+.test-intro p{margin:0 0 20px;color:var(--text-muted);font-size:1rem;}
+.test-intro .btn{width:100%;}
+.test-quiz{flex:1;display:flex;flex-direction:column;min-height:220px;}
+.test-quiz .test-progress{margin:0 0 16px;font-size:0.8125rem;color:var(--text-muted);}
+.test-quiz .test-meaning{margin:0 0 20px;font-size:1.25rem;color:var(--text);font-weight:500;flex:1;display:flex;align-items:center;justify-content:center;min-height:60px;padding:16px 0;}
+.test-input-wrap{display:flex;gap:10px;margin-bottom:16px;}
+.test-input{flex:1;padding:14px 16px;font-family:inherit;font-size:1rem;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);-webkit-appearance:none;appearance:none;}
+.test-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,158,255,0.2);}
+.test-input-wrap .btn{flex-shrink:0;padding:14px 20px;}
+.test-feedback{font-size:1rem;margin:0;min-height:1.5em;}
+.test-result{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:200px;}
+.test-result .test-score{margin:0 0 24px;font-size:1.25rem;color:var(--text);font-weight:500;}
+.test-wrong-list{margin-bottom:24px;}
+.test-wrong-title{margin:0 0 10px;font-size:0.875rem;color:var(--text-muted);}
+.test-result .btn{width:100%;margin-bottom:10px;}
+.test-result .btn:last-child{margin-bottom:0;}
+.add-section{margin-bottom:20px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:100%;padding:14px 20px;font-family:inherit;font-size:0.9375rem;font-weight:500;border:none;border-radius:var(--radius);cursor:pointer;transition:background 0.2s,color 0.2s;-webkit-tap-highlight-color:transparent;}
+.btn-add{background:var(--surface);color:var(--accent);border:1px dashed var(--border);}
+.btn-add:hover,.btn-add:focus-visible{background:var(--surface-hover);border-color:var(--accent);}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover,.btn-primary:focus-visible{background:var(--accent-hover);}
+.btn-secondary{background:var(--surface);color:var(--text-muted);}
+.btn-secondary:hover,.btn-secondary:focus-visible{background:var(--surface-hover);color:var(--text);}
+.modal-overlay{position:fixed;inset:0;top:0;left:0;right:0;bottom:0;width:100%;height:100%;height:100dvh;min-height:100vh;min-height:100dvh;background:#0f0f0f;display:flex;align-items:stretch;justify-content:center;padding:0;z-index:9999;opacity:0;visibility:hidden;transition:opacity 0.2s,visibility 0.2s;-webkit-tap-highlight-color:transparent;}
+.modal-overlay[aria-hidden="false"]{opacity:1;visibility:visible;}
+body.modal-open{overflow:hidden;height:100%;position:fixed;width:100%;}
+.modal{width:100%;max-width:400px;max-height:90vh;overflow-y:auto;background:var(--surface);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,0.6);-webkit-overflow-scrolling:touch;border:1px solid var(--border);}
+.modal-overlay{overflow:hidden;box-sizing:border-box;}
+.modal-test{width:100%;max-width:100%;height:100%;min-height:100%;min-height:100dvh;max-height:none;display:flex;flex-direction:column;border-radius:0;border:none;box-shadow:none;overflow-x:hidden;overflow-y:auto;box-sizing:border-box;}
+.modal-test .modal-header{flex-shrink:0;}
+.modal-test .test-content{flex:1;display:flex;flex-direction:column;min-height:0;overflow-x:hidden;padding:24px 20px;padding-bottom:28px;box-sizing:border-box;}
+.test-quiz .test-form-label{margin:0 0 10px;font-size:0.875rem;color:var(--accent);font-weight:500;}
+.test-input-wrap{min-width:0;}
+.test-input{flex:1 1 60%;min-width:200px;box-sizing:border-box;}
+.test-input-wrap .btn{min-width:80px;padding:14px 20px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);}
+.modal-header h2{margin:0;font-size:1.125rem;font-weight:600;}
+.btn-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;margin:-8px -8px -8px 0;font-size:1.5rem;line-height:1;color:var(--text-muted);background:none;border:none;border-radius:var(--radius-sm);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.btn-close:hover,.btn-close:focus-visible{color:var(--text);background:var(--surface-hover);}
+.form{padding:20px;}
+.field{margin-bottom:16px;}
+.field label{display:block;margin-bottom:6px;font-size:0.8125rem;color:var(--text-muted);font-weight:500;}
+.field input{width:100%;padding:12px 14px;font-family:inherit;font-size:0.9375rem;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);-webkit-appearance:none;appearance:none;}
+.field input::placeholder{color:var(--text-muted);opacity:0.8;}
+.field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(74,158,255,0.2);}
+.form-actions{display:flex;gap:10px;margin-top:24px;}
+.form-actions .btn{flex:1;}
+.filter-section{margin-bottom:16px;}
+.search{width:100%;padding:12px 16px;font-family:inherit;font-size:0.9375rem;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);-webkit-appearance:none;appearance:none;}
+.search::placeholder{color:var(--text-muted);}
+.search:focus{outline:none;border-color:var(--accent);}
+.verb-list{list-style:none;margin:0;padding:0;}
+.verb-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;transition:background 0.2s,border-color 0.2s;}
+.verb-item:hover{background:var(--surface-hover);}
+.verb-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:14px 16px;min-height:52px;}
+.verb-main{min-width:0;}
+.verb-spelling{font-family:"JetBrains Mono",monospace;font-size:1rem;font-weight:500;color:var(--text);}
+.verb-meaning{font-size:0.8125rem;color:var(--text-muted);margin-top:2px;}
+.verb-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.btn-speak,.btn-delete{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:none;border-radius:var(--radius-sm);background:transparent;color:var(--text-muted);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.2s,color 0.2s;}
+.btn-speak:hover,.btn-speak:focus-visible{background:rgba(74,158,255,0.15);color:var(--accent);}
+.btn-delete:hover,.btn-delete:focus-visible{background:rgba(232,90,90,0.15);color:var(--danger);}
+.btn-speak svg,.btn-delete svg{width:20px;height:20px;}
+.verb-detail{padding:0 16px 14px;border-top:1px solid var(--border);margin-top:-1px;max-height:0;overflow:hidden;transition:max-height 0.25s ease-out;}
+.verb-item.is-open .verb-detail{max-height:220px;}
+.verb-detail-inner{padding-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px 16px;}
+.verb-detail blockquote{margin:0;font-size:0.8125rem;color:var(--text-muted);}
+.verb-detail blockquote strong{display:block;font-family:"JetBrains Mono",monospace;font-size:0.875rem;color:var(--text);font-weight:500;margin-bottom:2px;}
+.verb-detail blockquote span{font-size:0.75rem;opacity:0.9;}
+.btn-speak-inline{margin-left:6px;padding:2px 8px;font-size:0.75rem;color:var(--text-muted);background:var(--surface-hover);border:none;border-radius:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;vertical-align:middle;}
+.btn-speak-inline:hover,.btn-speak-inline:focus-visible{color:var(--accent);}
+.empty-state{text-align:center;padding:48px 24px;color:var(--text-muted);font-size:0.9375rem;}
+.empty-state p{margin:0 0 8px;}
+.footer{padding:16px 0;text-align:center;border-top:1px solid var(--border);}
+.footer p{margin:0;font-size:0.75rem;color:var(--text-muted);}
+@media (max-width:480px){.app{padding-left:max(12px,var(--safe-left));padding-right:max(12px,var(--safe-right));}.header{padding:max(16px,var(--safe-top)) 0 16px;}.header h1{font-size:1.35rem;}.main{padding:16px 0;}.btn-test,.btn{min-height:48px;padding:14px 16px;font-size:1rem;}.search{min-height:48px;padding:14px 16px;font-size:16px;}.verb-row{padding:16px;min-height:56px;}.verb-spelling{font-size:0.9375rem;}.btn-speak,.btn-delete{width:44px;height:44px;}.modal-test .test-content{padding:20px max(16px,var(--safe-right)) max(24px,var(--safe-bottom)) max(16px,var(--safe-left));}.modal-header{padding:16px max(16px,var(--safe-right)) 16px 20px;}.test-quiz .test-meaning{font-size:1.125rem;padding:12px 0;min-height:52px;}.test-form-label{font-size:0.9375rem;}.test-input-wrap{flex-wrap:wrap;gap:12px;}.test-input{min-width:100%;flex:1 1 100%;min-height:48px;font-size:16px;}.test-input-wrap .btn{width:100%;min-height:48px;min-width:unset;}.test-result .btn,.test-intro .btn{min-height:48px;}.btn-close{width:44px;height:44px;}.footer{padding:16px 0 max(16px,var(--safe-bottom)) 0;}}
+@media (max-width:380px){.verb-detail-inner{grid-template-columns:1fr;}.verb-detail blockquote strong{font-size:0.8125rem;}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>동사 3단 변화</h1>
+      <p class="subtitle">V1 · V2 · V3</p>
+    </header>
+    <main class="main">
+      <section class="test-section">
+        <button type="button" class="btn btn-test" id="btnTest">테스트</button>
+      </section>
+      <section class="modal-overlay" id="testModalOverlay" aria-hidden="true">
+        <div class="modal modal-test" id="testModal">
+          <div class="modal-header">
+            <h2 id="testModalTitle">테스트</h2>
+            <button type="button" class="btn-close" id="btnCloseTest" aria-label="닫기">&times;</button>
+          </div>
+          <div class="test-content" id="testContent">
+            <div class="test-intro" id="testIntro">
+              <p>뜻을 보고 묻는 형(동사원형 / 과거형 / 과거분사)에 맞게 입력하세요.</p>
+              <button type="button" class="btn btn-primary" id="btnStartTest">시작</button>
+            </div>
+            <div class="test-quiz hidden" id="testQuiz">
+              <p class="test-progress" id="testProgress"></p>
+              <p class="test-meaning" id="testMeaning"></p>
+              <p class="test-form-label" id="testFormLabel"></p>
+              <div class="test-input-wrap">
+                <input type="text" class="test-input" id="testInput" placeholder="입력" autocomplete="off">
+                <button type="button" class="btn btn-primary" id="btnCheck">확인</button>
+              </div>
+              <p class="test-feedback hidden" id="testFeedback"></p>
+            </div>
+            <div class="test-result hidden" id="testResult">
+              <p class="test-score" id="testScore"></p>
+              <div class="test-wrong-list hidden" id="testWrongWrap">
+                <p class="test-wrong-title">오답 복습</p>
+                <button type="button" class="btn btn-primary" id="btnReviewWrong">오답만 다시 풀기</button>
+              </div>
+              <button type="button" class="btn btn-secondary" id="btnCloseResult">닫기</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="filter-section">
+        <input type="search" class="search" id="search" placeholder="검색 (스펠링 또는 뜻)" aria-label="동사 검색">
+      </section>
+      <section class="list-section">
+        <ul class="verb-list" id="verbList"></ul>
+      </section>
+    </main>
+    <footer class="footer">
+      <p>동사 3단 변화 · 검색으로 찾아보세요</p>
+    </footer>
+  </div>
+  <script>
+(function(){
+  'use strict';
+  var DEFAULT_VERBS=[{v1:'cost',v1Pron:'kɔːst',v2:'cost',v2Pron:'kɔːst',v3:'cost',v3Pron:'kɔːst',meaning:'비용이 들게 하다'},{v1:'cut',v1Pron:'kʌt',v2:'cut',v2Pron:'kʌt',v3:'cut',v3Pron:'kʌt',meaning:'자르다'},{v1:'hit',v1Pron:'hit',v2:'hit',v2Pron:'hit',v3:'hit',v3Pron:'hit',meaning:'치다, 때리다'},{v1:'hurt',v1Pron:'həːrt',v2:'hurt',v2Pron:'həːrt',v3:'hurt',v3Pron:'həːrt',meaning:'아프게 하다, 다치다'},{v1:'cast',v1Pron:'kæst',v2:'cast',v2Pron:'kæst',v3:'cast',v3Pron:'kæst',meaning:'던지다, 보내다'},{v1:'quit',v1Pron:'kwit',v2:'quit',v2Pron:'kwit',v3:'quit',v3Pron:'kwit',meaning:'그만두다'},{v1:'let',v1Pron:'let',v2:'let',v2Pron:'let',v3:'let',v3Pron:'let',meaning:'하게 하다, 허락하다'},{v1:'put',v1Pron:'put',v2:'put',v2Pron:'put',v3:'put',v3Pron:'put',meaning:'두다'},{v1:'set',v1Pron:'set',v2:'set',v2Pron:'set',v3:'set',v3Pron:'set',meaning:'(있어야 할 자리에) 두다'},{v1:'shut',v1Pron:'ʃʌt',v2:'shut',v2Pron:'ʃʌt',v3:'shut',v3Pron:'ʃʌt',meaning:'닫다'},{v1:'come',v1Pron:'kʌm',v2:'came',v2Pron:'keim',v3:'come',v3Pron:'kʌm',meaning:'오다'},{v1:'become',v1Pron:'bikʌm',v2:'became',v2Pron:'bikeim',v3:'become',v3Pron:'bikʌm',meaning:'되다'},{v1:'run',v1Pron:'rʌn',v2:'ran',v2Pron:'ræn',v3:'run',v3Pron:'rʌn',meaning:'달리다'},{v1:'read',v1Pron:'riːd',v2:'read',v2Pron:'red',v3:'read',v3Pron:'red',meaning:'읽다'},{v1:'build',v1Pron:'bild',v2:'built',v2Pron:'bilt',v3:'built',v3Pron:'bilt',meaning:'짓다'},{v1:'send',v1Pron:'send',v2:'sent',v2Pron:'sent',v3:'sent',v3Pron:'sent',meaning:'보내다'},{v1:'spend',v1Pron:'spend',v2:'spent',v2Pron:'spent',v3:'spent',v3Pron:'spent',meaning:'사용하다, 소비하다'},{v1:'burn',v1Pron:'bəːrn',v2:'burnt',v2Pron:'bəːrnt',v3:'burnt',v3Pron:'bəːrnt',meaning:'(불)태우다'},{v1:'mean',v1Pron:'miːn',v2:'meant',v2Pron:'ment',v3:'meant',v3Pron:'ment',meaning:'의미하다'},{v1:'bring',v1Pron:'briŋ',v2:'brought',v2Pron:'brɔːt',v3:'brought',v3Pron:'brɔːt',meaning:'가져오다'},{v1:'buy',v1Pron:'bai',v2:'bought',v2Pron:'bɔːt',v3:'bought',v3Pron:'bɔːt',meaning:'사다'},{v1:'catch',v1Pron:'kætʃ',v2:'caught',v2Pron:'kɔːt',v3:'caught',v3Pron:'kɔːt',meaning:'붙잡다'},{v1:'fight',v1Pron:'fait',v2:'fought',v2Pron:'fɔːt',v3:'fought',v3Pron:'fɔːt',meaning:'싸우다'},{v1:'teach',v1Pron:'tiːtʃ',v2:'taught',v2Pron:'tɔːt',v3:'taught',v3Pron:'tɔːt',meaning:'가르치다'},{v1:'think',v1Pron:'θiŋk',v2:'thought',v2Pron:'θɔːt',v3:'thought',v3Pron:'θɔːt',meaning:'생각하다'},{v1:'seek',v1Pron:'siːk',v2:'sought',v2Pron:'sɔːt',v3:'sought',v3Pron:'sɔːt',meaning:'찾다, 구하다'},{v1:'cry',v1Pron:'krai',v2:'cried',v2Pron:'kraid',v3:'cried',v3Pron:'kraid',meaning:'울다, 소리치다'},{v1:'like',v1Pron:'laik',v2:'liked',v2Pron:'laikt',v3:'liked',v3Pron:'laikt',meaning:'좋아하다'},{v1:'want',v1Pron:'wɔːnt',v2:'wanted',v2Pron:'wɔːntid',v3:'wanted',v3Pron:'wɔːntid',meaning:'원하다'},{v1:'pass',v1Pron:'pæs',v2:'passed',v2Pron:'pæst',v3:'passed',v3Pron:'pæst',meaning:'지나가다, 통과하다'},{v1:'wash',v1Pron:'waʃ',v2:'washed',v2Pron:'waʃt',v3:'washed',v3Pron:'waʃt',meaning:'씻다'},{v1:'watch',v1Pron:'watʃ',v2:'watched',v2Pron:'watʃt',v3:'watched',v3Pron:'watʃt',meaning:'지켜보다'},{v1:'play',v1Pron:'plei',v2:'played',v2Pron:'pleid',v3:'played',v3Pron:'pleid',meaning:'놀다'},{v1:'move',v1Pron:'muːv',v2:'moved',v2Pron:'muːvd',v3:'moved',v3Pron:'muːvd',meaning:'움직이다'},{v1:'study',v1Pron:'stʌdi',v2:'studied',v2Pron:'stʌdid',v3:'studied',v3Pron:'stʌdid',meaning:'공부하다'},{v1:'enjoy',v1Pron:'indʒɔi',v2:'enjoyed',v2Pron:'indʒɔid',v3:'enjoyed',v3Pron:'indʒɔid',meaning:'즐기다'},{v1:'try',v1Pron:'trai',v2:'tried',v2Pron:'traid',v3:'tried',v3Pron:'traid',meaning:'노력하다, 한번 해보다'},{v1:'stop',v1Pron:'stap',v2:'stopped',v2Pron:'stapt',v3:'stopped',v3Pron:'stapt',meaning:'멈추다'},{v1:'plan',v1Pron:'plæn',v2:'planned',v2Pron:'plænd',v3:'planned',v3Pron:'plænd',meaning:'계획하다'},{v1:'find',v1Pron:'faind',v2:'found',v2Pron:'faund',v3:'found',v3Pron:'faund',meaning:'찾다, 발견하다'},{v1:'keep',v1Pron:'kiːp',v2:'kept',v2Pron:'kept',v3:'kept',v3Pron:'kept',meaning:'유지하다'},{v1:'sleep',v1Pron:'sliːp',v2:'slept',v2Pron:'slept',v3:'slept',v3Pron:'slept',meaning:'잠자다'},{v1:'leave',v1Pron:'liːv',v2:'left',v2Pron:'left',v3:'left',v3Pron:'left',meaning:'남겨두다, 떠나다'},{v1:'meet',v1Pron:'miːt',v2:'met',v2Pron:'met',v3:'met',v3Pron:'met',meaning:'만나다'},{v1:'pay',v1Pron:'pei',v2:'paid',v2Pron:'peid',v3:'paid',v3Pron:'peid',meaning:'지불하다'},{v1:'lie',v1Pron:'lai',v2:'lied',v2Pron:'laid',v3:'lied',v3Pron:'laid',meaning:'거짓말하다'},{v1:'lie',v1Pron:'lai',v2:'lay',v2Pron:'lei',v3:'lain',v3Pron:'lein',meaning:'눕다, 놓여있다'},{v1:'lay',v1Pron:'lei',v2:'laid',v2Pron:'leid',v3:'laid',v3Pron:'leid',meaning:'(평평하게) 낳다, 놓다, 두다'},{v1:'say',v1Pron:'sei',v2:'said',v2Pron:'sed',v3:'said',v3Pron:'sed',meaning:'말하다'},{v1:'shine',v1Pron:'ʃain',v2:'shone',v2Pron:'ʃoun',v3:'shone',v3Pron:'ʃoun',meaning:'빛나다'},{v1:'strike',v1Pron:'straik',v2:'stroke',v2Pron:'strouk',v3:'stroke',v3Pron:'strouk',meaning:'치다, 때리다'},{v1:'lead',v1Pron:'liːd',v2:'led',v2Pron:'led',v3:'led',v3Pron:'led',meaning:'이끌다'},{v1:'feed',v1Pron:'fiːd',v2:'fed',v2Pron:'fed',v3:'fed',v3Pron:'fed',meaning:'먹이다'},{v1:'hang',v1Pron:'hæŋ',v2:'hung',v2Pron:'hʌŋ',v3:'hung',v3Pron:'hʌŋ',meaning:'걸다, 매달다'},{v1:'bend',v1Pron:'bend',v2:'bent',v2Pron:'bent',v3:'bent',v3Pron:'bent',meaning:'구부리다'},{v1:'feel',v1Pron:'fiːl',v2:'felt',v2Pron:'felt',v3:'felt',v3Pron:'felt',meaning:'느끼다'},{v1:'sit',v1Pron:'sit',v2:'sat',v2Pron:'sæt',v3:'sat',v3Pron:'sæt',meaning:'앉다'},{v1:'stand',v1Pron:'stænd',v2:'stood',v2Pron:'stud',v3:'stood',v3Pron:'stud',meaning:'일어서다'},{v1:'wind',v1Pron:'waind',v2:'wound',v2Pron:'waund',v3:'wound',v3Pron:'waund',meaning:'감다'},{v1:'understand',v1Pron:'ʌndərstænd',v2:'understood',v2Pron:'ʌndərstud',v3:'understood',v3Pron:'ʌndərstud',meaning:'이해하다'},{v1:'win',v1Pron:'win',v2:'won',v2Pron:'wʌn',v3:'won',v3Pron:'wʌn',meaning:'획득하다, 이기다'},{v1:'have',v1Pron:'hæv',v2:'had',v2Pron:'hæd',v3:'had',v3Pron:'hæd',meaning:'가지고 있다'},{v1:'hear',v1Pron:'hiər',v2:'heard',v2Pron:'həːrd',v3:'heard',v3Pron:'həːrd',meaning:'듣다'},{v1:'sell',v1Pron:'sel',v2:'sold',v2Pron:'sould',v3:'sold',v3Pron:'sould',meaning:'팔다'},{v1:'tell',v1Pron:'tel',v2:'told',v2Pron:'tould',v3:'told',v3Pron:'tould',meaning:'말하다, 알려주다'},{v1:'make',v1Pron:'meik',v2:'made',v2Pron:'meid',v3:'made',v3Pron:'meid',meaning:'만들다'},{v1:'lose',v1Pron:'luːz',v2:'lost',v2Pron:'lɔːst',v3:'lost',v3Pron:'lɔːst',meaning:'잃어버리다'},{v1:'drive',v1Pron:'draiv',v2:'drove',v2Pron:'drouv',v3:'driven',v3Pron:'drivn',meaning:'운전하다'},{v1:'ride',v1Pron:'raid',v2:'rode',v2Pron:'roud',v3:'ridden',v3Pron:'ridn',meaning:'(탈 것을)타다'},{v1:'write',v1Pron:'rait',v2:'wrote',v2Pron:'rout',v3:'written',v3Pron:'ritn',meaning:'(글을)쓰다'},{v1:'grow',v1Pron:'grou',v2:'grew',v2Pron:'gruː',v3:'grown',v3Pron:'groun',meaning:'자라다, 키우다'},{v1:'know',v1Pron:'nou',v2:'knew',v2Pron:'njuː',v3:'known',v3Pron:'noun',meaning:'알다'},{v1:'throw',v1Pron:'θrou',v2:'threw',v2Pron:'θruː',v3:'thrown',v3Pron:'θroun',meaning:'던지다'},{v1:'blow',v1Pron:'blou',v2:'blew',v2Pron:'bluː',v3:'blown',v3Pron:'bloun',meaning:'(바람이)불다'},{v1:'take',v1Pron:'teik',v2:'took',v2Pron:'tuk',v3:'taken',v3Pron:'teikn',meaning:'가지고 가다'},{v1:'eat',v1Pron:'iːt',v2:'ate',v2Pron:'eit',v3:'eaten',v3Pron:'iːtn',meaning:'먹다'},{v1:'give',v1Pron:'giv',v2:'gave',v2Pron:'geiv',v3:'given',v3Pron:'givn',meaning:'주다'},{v1:'fall',v1Pron:'fɔːl',v2:'fell',v2Pron:'fel',v3:'fallen',v3Pron:'fɔːlən',meaning:'떨어지다, 넘어지다'},{v1:'do',v1Pron:'duː',v2:'did',v2Pron:'did',v3:'done',v3Pron:'dʌn',meaning:'하다'},{v1:'go',v1Pron:'gou',v2:'went',v2Pron:'went',v3:'gone',v3Pron:'gɔːn',meaning:'가다'},{v1:'am',v1Pron:'æm',v2:'was',v2Pron:'wəz',v3:'been',v3Pron:'biːn',meaning:'이다, 있다'},{v1:'is',v1Pron:'iz',v2:'was',v2Pron:'wəz',v3:'been',v3Pron:'biːn',meaning:'이다, 있다'},{v1:'are',v1Pron:'ɑːr',v2:'were',v2Pron:'wər',v3:'been',v3Pron:'biːn',meaning:'이다, 있다'},{v1:'see',v1Pron:'siː',v2:'saw',v2Pron:'sɔː',v3:'seen',v3Pron:'siːn',meaning:'보다'},{v1:'show',v1Pron:'ʃou',v2:'showed',v2Pron:'ʃoud',v3:'shown',v3Pron:'ʃoun',meaning:'보여주다'},{v1:'forget',v1Pron:'fərɡet',v2:'forgot',v2Pron:'fərɡɒt',v3:'forgotten',v3Pron:'fərɡɒtn',meaning:'잊어버리다'},{v1:'get',v1Pron:'get',v2:'got',v2Pron:'ɡɒt',v3:'gotten',v3Pron:'ɡɒtn',meaning:'얻다, 되다, 도착하다'},{v1:'break',v1Pron:'breik',v2:'broke',v2Pron:'brouk',v3:'broken',v3Pron:'broukn',meaning:'부수다'},{v1:'choose',v1Pron:'tʃuːz',v2:'chose',v2Pron:'tʃouz',v3:'chosen',v3Pron:'tʃouzn',meaning:'고르다, 선택하다'},{v1:'speak',v1Pron:'spiːk',v2:'spoke',v2Pron:'spouk',v3:'spoken',v3Pron:'spoukn',meaning:'(연설하듯)말하다'},{v1:'begin',v1Pron:'bigin',v2:'began',v2Pron:'bigæn',v3:'begun',v3Pron:'bigʌn',meaning:'시작하다'},{v1:'drink',v1Pron:'driŋk',v2:'drank',v2Pron:'dræŋk',v3:'drunk',v3Pron:'drʌŋk',meaning:'마시다'},{v1:'sing',v1Pron:'siŋ',v2:'sang',v2Pron:'sæŋ',v3:'sung',v3Pron:'sʌŋ',meaning:'노래하다'},{v1:'swim',v1Pron:'swim',v2:'swam',v2Pron:'swæm',v3:'swum',v3Pron:'swʌm',meaning:'수영하다'}];
+  function getAllVerbs(){return DEFAULT_VERBS.slice();}
+  function pronSpan(pron){return pron?' <span>('+escapeHtml(pron)+')</span>':'';}
+  function speak(text,lang){if(!text||!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(String(text).trim());u.lang=lang||'en-US';u.rate=0.9;window.speechSynthesis.speak(u);}
+  var listEl=document.getElementById('verbList');var searchEl=document.getElementById('search');
+  function getFilteredVerbs(){var q=(searchEl.value||'').trim().toLowerCase();var all=getAllVerbs();if(!q)return all;return all.filter(function(v){return v.v1.toLowerCase().indexOf(q)!==-1||(v.v2&&v.v2.toLowerCase().indexOf(q)!==-1)||(v.v3&&v.v3.toLowerCase().indexOf(q)!==-1)||(v.meaning&&v.meaning.toLowerCase().indexOf(q)!==-1);});}
+  searchEl.oninput=function(){renderList(getFilteredVerbs());};
+  function escapeHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+  function renderList(verbs){listEl.innerHTML='';if(verbs.length===0){listEl.innerHTML='<li class="empty-state"><p>검색 결과가 없습니다.</p></li>';return;}
+  verbs.forEach(function(verb){var li=document.createElement('li');li.className='verb-item';var spelling=verb.v1+' → '+verb.v2+' → '+verb.v3;var main=document.createElement('div');main.className='verb-main';main.innerHTML='<div class="verb-spelling">'+escapeHtml(spelling)+'</div>'+(verb.meaning?'<div class="verb-meaning">'+escapeHtml(verb.meaning)+'</div>':'');
+  var actions=document.createElement('div');actions.className='verb-actions';var speakBtn=document.createElement('button');speakBtn.type='button';speakBtn.className='btn-speak';speakBtn.setAttribute('aria-label','V1 발음');speakBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/><path d="M8 23h8"/></svg>';speakBtn.onclick=function(){speak(verb.v1,'en-US');};actions.appendChild(speakBtn);
+  var row=document.createElement('div');row.className='verb-row';row.appendChild(main);row.appendChild(actions);var detail=document.createElement('div');detail.className='verb-detail';var formLabels=['동사원형','과거형','과거분사'];detail.innerHTML='<div class="verb-detail-inner"><blockquote><strong>'+formLabels[0]+'</strong> '+escapeHtml(verb.v1)+pronSpan(verb.v1Pron)+' <button type="button" class="btn-speak-inline" data-idx="0">🔊</button></blockquote><blockquote><strong>'+formLabels[1]+'</strong> '+escapeHtml(verb.v2)+pronSpan(verb.v2Pron)+' <button type="button" class="btn-speak-inline" data-idx="1">🔊</button></blockquote><blockquote><strong>'+formLabels[2]+'</strong> '+escapeHtml(verb.v3)+pronSpan(verb.v3Pron)+' <button type="button" class="btn-speak-inline" data-idx="2">🔊</button></blockquote></div>';
+  row.onclick=function(e){if(!e.target.closest('.btn-speak'))li.classList.toggle('is-open');};var words=[verb.v1,verb.v2,verb.v3];detail.querySelectorAll('.btn-speak-inline').forEach(function(btn){btn.onclick=function(e){e.stopPropagation();var i=parseInt(btn.getAttribute('data-idx'),10);if(!isNaN(i)&&words[i])speak(words[i],'en-US');};});li.appendChild(row);li.appendChild(detail);listEl.appendChild(li);});}
+  renderList(getFilteredVerbs());
+  var testModal=document.getElementById('testModalOverlay');var testIntro=document.getElementById('testIntro');var testQuiz=document.getElementById('testQuiz');var testResult=document.getElementById('testResult');var testProgressEl=document.getElementById('testProgress');var testMeaningEl=document.getElementById('testMeaning');var testFormLabelEl=document.getElementById('testFormLabel');var testInputEl=document.getElementById('testInput');var testFeedbackEl=document.getElementById('testFeedback');var testScoreEl=document.getElementById('testScore');var testWrongWrap=document.getElementById('testWrongWrap');var FORM_LABELS=['동사원형','과거형','과거분사'];var testPool=[];var testIndex=0;var testFormIndex=0;var testCorrect=0;var testWrongList=[];
+  function closeTestModal(){testModal.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');}
+  function openTestModal(){testModal.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');}
+  function addClass(el,c){if(el&&!el.classList.contains(c))el.classList.add(c);}
+  function removeClass(el,c){if(el)el.classList.remove(c);}
+  function showTestScreen(screen){removeClass(testIntro,'hidden');removeClass(testQuiz,'hidden');removeClass(testResult,'hidden');if(screen==='intro'){removeClass(testIntro,'hidden');addClass(testQuiz,'hidden');addClass(testResult,'hidden');}else if(screen==='quiz'){addClass(testIntro,'hidden');removeClass(testQuiz,'hidden');addClass(testResult,'hidden');}else{addClass(testIntro,'hidden');addClass(testQuiz,'hidden');removeClass(testResult,'hidden');}}
+  function updateProgress(){if(testProgressEl)testProgressEl.textContent='문제 '+(testIndex+1)+' / '+testPool.length;}
+  function pickRandomForm(){testFormIndex=Math.floor(Math.random()*3);if(testFormLabelEl)testFormLabelEl.textContent=FORM_LABELS[testFormIndex]+' 입력';if(testInputEl)testInputEl.placeholder=FORM_LABELS[testFormIndex]+' 입력';}
+  function startTest(verbs){testPool=verbs.slice();testIndex=0;testCorrect=0;testWrongList=[];if(testPool.length===0)return;showTestScreen('quiz');updateProgress();testMeaningEl.textContent='뜻: '+testPool[0].meaning;pickRandomForm();testInputEl.value='';testInputEl.focus();removeClass(testFeedbackEl,'hidden');testFeedbackEl.textContent='';document.getElementById('testModalTitle').textContent=verbs.length===DEFAULT_VERBS.length?'테스트':'오답 복습';}
+  function nextQuestion(){testIndex++;if(testIndex>=testPool.length){showTestScreen('result');testScoreEl.textContent='결과: '+testCorrect+' / '+testPool.length+' 맞음';if(testWrongList.length>0)removeClass(testWrongWrap,'hidden');else addClass(testWrongWrap,'hidden');return;}updateProgress();testMeaningEl.textContent='뜻: '+testPool[testIndex].meaning;pickRandomForm();testInputEl.value='';testInputEl.focus();testFeedbackEl.textContent='';}
+  function checkAnswer(){var verb=testPool[testIndex];var answer=(testInputEl.value||'').trim().toLowerCase();var correctAnswer=[verb.v1,verb.v2,verb.v3][testFormIndex];var correct=correctAnswer.toLowerCase();if(answer===correct){testCorrect++;testFeedbackEl.textContent='정답!';testFeedbackEl.style.color='var(--accent)';}else{testWrongList.push(verb);testFeedbackEl.textContent='오답. 정답: '+correctAnswer+' ('+FORM_LABELS[testFormIndex]+')';testFeedbackEl.style.color='var(--danger)';}removeClass(testFeedbackEl,'hidden');setTimeout(function(){nextQuestion();},800);}
+  document.getElementById('btnTest').onclick=function(){openTestModal();showTestScreen('intro');addClass(testWrongWrap,'hidden');};
+  document.getElementById('btnCloseTest').onclick=closeTestModal;
+  testModal.onclick=function(e){if(e.target===testModal)closeTestModal();};
+  document.getElementById('btnStartTest').onclick=function(){startTest(getAllVerbs());};
+  document.getElementById('btnReviewWrong').onclick=function(){startTest(testWrongList);};
+  document.getElementById('btnCheck').onclick=checkAnswer;
+  testInputEl.onkeydown=function(e){if(e.key==='Enter')checkAnswer();};
+  document.getElementById('btnCloseResult').onclick=closeTestModal;
+})();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>나만의 단어장</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --accent: #ff6b6b;
+            --green: #2ecc71;
+            --orange: #f39c12;
+            --purple: #9b59b6;
+            --dark: #2c3e50;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+            margin: 0; padding: 0;
+            background: #f0f2f5;
+            height: 100vh;
+            height: -webkit-fill-available;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0; left: 0;
+        }
+        .screen.active { display: flex; }
+
+        /* ── 메인 화면 ── */
+        #main-screen {
+            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            text-align: center;
+            width: 88%;
+            max-width: 380px;
+            padding: 30px 0 40px;
+        }
+
+        .app-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        .app-subtitle { color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-bottom: 28px; }
+
+        .section-label {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin: 18px 0 8px;
+            text-align: left;
+            padding-left: 4px;
+        }
+
+        .main-btn {
+            display: block; width: 100%;
+            padding: 15px;
+            margin: 7px 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.15s;
+            letter-spacing: -0.2px;
+        }
+        .main-btn:active { opacity: 0.8; transform: scale(0.97); }
+
+        .btn-manage  { background: linear-gradient(135deg,#2ecc71,#27ae60); }
+        .btn-all     { background: linear-gradient(135deg,#4a90e2,#357abd); }
+        .btn-rev     { background: linear-gradient(135deg,#9b59b6,#8e44ad); }
+        .btn-unk     { background: linear-gradient(135deg,#ff6b6b,#ee5253); }
+        .btn-unk-rev { background: linear-gradient(135deg,#e056fd,#be2edd); }
+        .btn-drive        { background: linear-gradient(135deg,#34495e,#2c3e50); }
+        .btn-drive-rev    { background: linear-gradient(135deg,#e67e22,#d35400); }
+        .btn-drive-unk    { background: linear-gradient(135deg,#c0392b,#a93226); border: 1.5px solid #ff6b6b; }
+        .btn-drive-unk-rev{ background: linear-gradient(135deg,#8e44ad,#7d3c98); border: 1.5px solid #e056fd; }
+
+        /* ── 공통 헤더 ── */
+        .header {
+            background: white;
+            padding: 14px 16px;
+            padding-top: calc(14px + env(safe-area-inset-top));
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+        .back-btn {
+            position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none;
+            font-size: 0.95rem; color: var(--primary); cursor: pointer;
+            padding: 8px;
+        }
+
+        /* ── 스크롤 영역 ── */
+        .scroll-content {
+            flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+            padding: 18px 18px 120px;
+        }
+
+        /* ── 탭 ── */
+        .tabs { display: flex; margin-bottom: 16px; border-radius: 10px; overflow: hidden; border: 1px solid #e0e0e0; }
+        .tab { flex: 1; padding: 11px; text-align: center; background: #f5f5f5; cursor: pointer; font-size: 0.88rem; font-weight: 600; color: #888; border: none; }
+        .tab.active-tab { background: var(--primary); color: white; }
+
+        /* ── 입력 폼 ── */
+        .input-group { background: white; padding: 18px; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 16px; }
+        label { display: block; margin-bottom: 5px; font-weight: 700; color: #555; font-size: 0.85rem; }
+        input, textarea, select {
+            width: 100%; padding: 12px; margin-bottom: 12px;
+            border: 1.5px solid #e8e8e8; border-radius: 9px;
+            box-sizing: border-box; font-size: 1rem;
+            font-family: inherit;
+            -webkit-appearance: none;
+            background: white;
+        }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        .action-btn {
+            width: 100%; padding: 14px;
+            background: var(--primary); color: white;
+            border: none; border-radius: 10px;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+        }
+        .btn-row { display: flex; gap: 8px; }
+
+        .bulk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+        /* ── 단어 목록 ── */
+        .filter-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; padding: 10px 12px;
+            background: #f9f9f9; border-radius: 10px;
+        }
+        .word-count-text { font-weight: 700; font-size: 0.9rem; }
+        .toggle-label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+        .toggle-checkbox { width: 18px; height: 18px; cursor: pointer; }
+        .search-box { margin-bottom: 12px; }
+        .search-box input { margin-bottom: 0; border: 2px solid var(--primary); }
+
+        .word-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 11px 4px; border-bottom: 1px solid #f0f0f0;
+        }
+        .word-text { flex: 1; padding-right: 10px; }
+        .word-text strong { font-size: 0.95rem; }
+        .word-text span { font-size: 0.8rem; color: #777; }
+        .badge-unknown {
+            background: var(--accent); color: white;
+            font-size: 0.65rem; padding: 2px 6px;
+            border-radius: 4px; margin-left: 6px; vertical-align: middle;
+        }
+        .btn-group { display: flex; flex-direction: column; gap: 4px; }
+        .edit-btn  { background: var(--orange); color: white; padding: 5px 10px; font-size: 0.8rem; border: none; border-radius: 5px; cursor: pointer; }
+        .delete-btn{ background: var(--accent);  color: white; padding: 5px 10px; font-size: 0.8rem; border: none; border-radius: 5px; cursor: pointer; }
+        .edit-indicator { color: var(--orange); font-weight: 700; font-size: 0.88rem; margin-bottom: 10px; display: none; }
+
+        /* ── 공유 영역 ── */
+        .data-tools {
+            margin-top: 24px; padding: 18px;
+            background: #f8f0fc; border: 2px dashed var(--purple);
+            border-radius: 12px; font-size: 0.88rem;
+        }
+        .share-btn {
+            width: 100%; margin-top: 8px; padding: 12px;
+            border: none; border-radius: 8px; cursor: pointer;
+            font-weight: 700; color: white; font-size: 0.9rem;
+        }
+        .btn-copy   { background: var(--purple); }
+        .btn-file   { background: var(--dark); }
+        .btn-friend { background: linear-gradient(135deg,#FF9966,#FF5E62); margin-top: 10px; }
+        .ios-note { font-size: 0.75rem; color: #888; margin-top: 6px; line-height: 1.4; }
+
+        /* ── 학습 화면 ── */
+        #study-screen .scroll-content {
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; position: relative;
+        }
+
+        .study-card {
+            background: white; border-radius: 20px; padding: 28px 24px;
+            text-align: center; box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+            width: 88%; max-width: 400px;
+            display: flex; flex-direction: column; align-items: center;
+            max-height: calc(100vh - 220px); overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            cursor: pointer; transition: transform 0.1s;
+        }
+        .study-card:active { transform: scale(0.99); }
+
+        .word-display { font-size: 2.1rem; font-weight: 800; color: #222; margin-bottom: 10px; word-break: break-all; }
+        .sound-btn {
+            background: #f0f0f0; border: none; border-radius: 50%;
+            width: 42px; height: 42px; cursor: pointer; margin-bottom: 12px;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .tap-hint { font-size: 0.78rem; color: #bbb; margin-bottom: 6px; }
+
+        .details-display {
+            display: none; margin-top: 14px;
+            border-top: 2px dashed #eee; padding-top: 14px;
+            width: 100%; text-align: left; position: relative;
+        }
+        .detail-item { margin: 8px 0; font-size: 0.97rem; line-height: 1.45; }
+        .detail-label {
+            display: inline-block; color: #888; font-size: 0.75rem;
+            background: #f5f5f5; padding: 2px 7px; border-radius: 4px; margin-bottom: 3px;
+        }
+        .study-edit-btn {
+            position: absolute; bottom: 0; right: 0;
+            background: none; border: 1px solid #ddd; color: #777;
+            border-radius: 5px; padding: 5px 9px; font-size: 0.78rem; cursor: pointer;
+        }
+
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 2rem; color: #ccc; background: none; border: none;
+            cursor: pointer; padding: 20px; z-index: 5;
+        }
+        .nav-arrow:active { color: var(--primary); }
+        .nav-left { left: 0; }
+        .nav-right { right: 0; }
+
+        .bottom-controls {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            display: flex; background: white;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.1); z-index: 20;
+            padding-bottom: env(safe-area-inset-bottom, 16px);
+        }
+        .control-btn { flex: 1; padding: 20px 0; border: none; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
+        .btn-know    { background: white; color: var(--primary); }
+        .btn-unknown { background: var(--accent); color: white; }
+
+        /* ── 운전 모드 ── */
+        #listen-screen { background: #0f1620; }
+        #listen-screen .header { background: #1a2332; color: white; box-shadow: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        #listen-screen .back-btn { color: #7fb3f5; }
+
+        .listen-container {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center; padding: 30px 24px;
+        }
+        .listen-progress { font-size: 0.9rem; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
+        .listen-word { font-size: 2.4rem; font-weight: 800; color: white; margin-bottom: 16px; }
+        .listen-mean { font-size: 1.7rem; color: #7fb3f5; font-weight: 600; margin-bottom: 44px; min-height: 2rem; }
+
+        .player-controls { display: flex; align-items: center; gap: 20px; margin-bottom: 36px; }
+        .ctrl-btn {
+            background: rgba(255,255,255,0.08); border: none; border-radius: 50%;
+            width: 58px; height: 58px; font-size: 1.4rem;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; color: white;
+        }
+        .ctrl-btn:active { background: rgba(255,255,255,0.18); transform: scale(0.95); }
+        .play-btn { width: 76px; height: 76px; font-size: 2rem; background: var(--primary); }
+
+        .listen-note { font-size: 0.75rem; color: rgba(255,255,255,0.3); line-height: 1.6; }
+
+        /* ── 모달 ── */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75); z-index: 200;
+            justify-content: center; align-items: center;
+        }
+        .modal.open { display: flex; }
+        .modal-content {
+            background: white; padding: 28px 24px; border-radius: 18px;
+            text-align: center; width: 82%; max-width: 320px;
+        }
+        .modal-content h2 { margin-top: 0; }
+        .modal-content p  { color: #555; font-size: 0.9rem; }
+        .modal-content .action-btn { margin-top: 8px; }
+
+        /* ── 시작 모달 (iOS TTS 잠금 해제용) ── */
+        #unlock-modal {
+            background: rgba(15,22,32,0.95);
+        }
+        #unlock-modal .modal-content {
+            background: #1a2332;
+            color: white;
+        }
+        #unlock-modal .modal-content h2 { color: white; font-size: 1.4rem; }
+        #unlock-modal .modal-content p  { color: rgba(255,255,255,0.6); }
+
+        .start-btn {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg,#4a90e2,#357abd);
+            color: white; border: none; border-radius: 12px;
+            font-size: 1.1rem; font-weight: 800; cursor: pointer;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- iOS TTS 잠금 해제 모달 -->
+<div id="unlock-modal" class="modal open">
+    <div class="modal-content">
+        <h2>🗽 나의 단어장</h2>
+        <p>시작하기 전에 아래 버튼을 터치해주세요.<br><small style="opacity:0.5;">(iOS 음성 기능 활성화)</small></p>
+        <button class="start-btn" onclick="unlockAndStart()">▶ 시작하기</button>
+    </div>
+</div>
+
+<!-- 메인 화면 -->
+<div id="main-screen" class="screen active">
+    <div class="main-content" style="margin: 0 auto;">
+        <h1 class="app-title">🗽 나의 단어장</h1>
+        <p class="app-subtitle" id="word-count-main">단어 0개</p>
+
+        <button class="main-btn btn-manage" onclick="showManageScreen()">✏️ 단어 관리 / 목록</button>
+
+        <div class="section-label">📘 학습 모드</div>
+        <button class="main-btn btn-all"     onclick="startStudy('all')">전체 단어 학습</button>
+        <button class="main-btn btn-rev"     onclick="startStudy('reverse-all')">🔄 전체 단어 거꾸로</button>
+        <button class="main-btn btn-unk"     onclick="startStudy('unknown')">🔥 모르는 단어 학습</button>
+        <button class="main-btn btn-unk-rev" onclick="startStudy('reverse-unknown')">🔥🔄 모르는 단어 거꾸로</button>
+
+        <div class="section-label">🚘 운전 모드 (자동 재생)</div>
+        <button class="main-btn btn-drive"         onclick="startListenMode('all-normal')">🚘 전체 듣기</button>
+        <button class="main-btn btn-drive-rev"     onclick="startListenMode('all-reverse')">🚘🔄 전체 거꾸로</button>
+        <button class="main-btn btn-drive-unk"     onclick="startListenMode('unknown-normal')">🚘🔥 모르는 단어 듣기</button>
+        <button class="main-btn btn-drive-unk-rev" onclick="startListenMode('unknown-reverse')">🚘🔥🔄 모르는 단어 거꾸로</button>
+    </div>
+</div>
+
+<!-- 단어 관리 화면 -->
+<div id="manage-screen" class="screen">
+    <div class="header">
+        <button class="back-btn" onclick="goHome()">← 홈</button>
+        단어 관리
+    </div>
+    <div class="scroll-content">
+        <div class="tabs">
+            <div class="tab active-tab" onclick="switchTab('single')">입력/수정</div>
+            <div class="tab" onclick="switchTab('bulk')">대량 추가</div>
+            <div class="tab" onclick="switchTab('list')">목록/공유</div>
+        </div>
+
+        <!-- 단일 입력 -->
+        <div id="tab-single" class="input-group">
+            <div class="edit-indicator" id="edit-indicator">⚠️ 단어를 수정 중입니다</div>
+            <label>단어 (Word) *</label>
+            <input type="text" id="input-word" placeholder="예: apple">
+            <label>뜻 (Meaning) *</label>
+            <input type="text" id="input-mean" placeholder="예: 사과">
+            <label>암기방법 (Mnemonic)</label>
+            <input type="text" id="input-method" placeholder="암기법 또는 예문">
+            <label>참고 (Note)</label>
+            <input type="text" id="input-note" placeholder="추가 설명">
+            <div class="btn-row">
+                <button id="btn-save-single" class="action-btn" onclick="addSingleWord()">저장하기</button>
+                <button id="btn-cancel-edit" class="action-btn" onclick="cancelEdit()" style="display:none; background:#95a5a6;">취소</button>
+            </div>
+        </div>
+
+        <!-- 대량 추가 -->
+        <div id="tab-bulk" class="input-group" style="display:none;">
+            <p style="font-size:0.8rem; color:#888; margin-top:0;">여러 줄을 복사해서 붙여넣으세요. 줄 순서가 맞아야 합니다.</p>
+            <div class="bulk-grid">
+                <div><label>단어들</label><textarea id="bulk-word" rows="6" placeholder="Apple&#13;&#10;Book"></textarea></div>
+                <div><label>뜻들</label><textarea id="bulk-mean" rows="6" placeholder="사과&#13;&#10;책"></textarea></div>
+                <div><label>암기방법</label><textarea id="bulk-method" rows="6" placeholder="(선택)"></textarea></div>
+                <div><label>참고</label><textarea id="bulk-note" rows="6" placeholder="(선택)"></textarea></div>
+            </div>
+            <button class="action-btn" onclick="addBulkWords()">일괄 저장하기</button>
+        </div>
+
+        <!-- 목록 & 공유 -->
+        <div id="tab-list" class="input-group" style="display:none;">
+            <div class="filter-bar">
+                <span class="word-count-text">총 <span id="word-count">0</span>개</span>
+                <label class="toggle-label">
+                    <input type="checkbox" id="filter-unknown" class="toggle-checkbox" onchange="updateWordList()">
+                    🔥 모르는 단어만
+                </label>
+            </div>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="🔍 단어 또는 뜻 검색..." oninput="updateWordList()">
+            </div>
+            <div id="word-list-container"></div>
+
+            <div class="data-tools">
+                <h4 style="margin-top:0; color:var(--purple);">📤 단어장 데이터 공유</h4>
+
+                <div style="margin-bottom:20px; padding-bottom:18px; border-bottom:2px dashed #ddd;">
+                    <label style="color:#d35400;">🔥 친구에게 바로 보내기 (추천)</label>
+                    <p style="font-size:0.8rem; color:#777; margin-bottom:4px;">현재 단어 목록이 포함된 새 앱 파일을 만듭니다.</p>
+                    <button class="share-btn btn-friend" onclick="downloadSelfContainedHTML()">💌 친구 전송용 파일 만들기</button>
+                    <p class="ios-note">📱 iPhone: 파일이 Safari에서 열리면 공유 버튼(□↑) → "파일에 저장" 또는 AirDrop으로 전송하세요.</p>
+                </div>
+
+                <label>방법 1: 텍스트 코드 복사</label>
+                <textarea id="data-area" rows="2" placeholder="코드 생성 또는 붙여넣기"></textarea>
+                <div class="btn-row">
+                    <button class="share-btn btn-copy" onclick="exportData()">복사 (보내기)</button>
+                    <button class="share-btn btn-copy" onclick="importData()" style="background:#8e44ad;">붙여넣기 (받기)</button>
+                </div>
+
+                <div style="border-top:1px solid #ddd; padding-top:14px; margin-top:14px;">
+                    <label>방법 2: JSON 파일 백업</label>
+                    <input type="file" id="file-input" style="display:none" onchange="handleFileSelect(event)" accept=".json">
+                    <div class="btn-row" style="margin-top:4px;">
+                        <button class="share-btn btn-file" onclick="downloadFile()">파일 저장</button>
+                        <button class="share-btn btn-file" onclick="triggerFileUpload()">파일 열기</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="clearAllData()" style="background:#e74c3c; margin-top:16px;">전체 초기화</button>
+        </div>
+    </div>
+</div>
+
+<!-- 학습 화면 -->
+<div id="study-screen" class="screen">
+    <div class="header">
+        <button class="back-btn" onclick="quitStudy()">✕ 종료</button>
+        <span id="study-mode-title">학습 중</span>
+    </div>
+    <div class="scroll-content">
+        <button class="nav-arrow nav-left" onclick="moveCard(-1)">‹</button>
+        <button class="nav-arrow nav-right" onclick="moveCard(1)">›</button>
+        <div class="study-card" id="card-area" onclick="toggleCard()">
+            <div class="word-display" id="study-main-text">Ready?</div>
+            <button class="sound-btn" onclick="event.stopPropagation(); playSound();">🔊</button>
+            <p class="tap-hint">(터치하여 뜻 토글)</p>
+            <div class="details-display" id="study-details">
+                <div class="detail-item">
+                    <span class="detail-label" id="label-sub-text">뜻</span><br>
+                    <span id="study-sub-text" style="font-weight:700; color:var(--primary);"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">암기법</span><br>
+                    <span id="study-method"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">참고</span><br>
+                    <span id="study-note"></span>
+                </div>
+                <button class="study-edit-btn" onclick="event.stopPropagation(); openStudyEditModal()">✏️ 수정</button>
+            </div>
+        </div>
+    </div>
+    <div class="bottom-controls">
+        <button class="control-btn btn-unknown" onclick="markUnknown()">모른다 😭</button>
+        <button class="control-btn btn-know"    onclick="markKnow()">안다 😎</button>
+    </div>
+</div>
+
+<!-- 운전 모드 화면 -->
+<div id="listen-screen" class="screen">
+    <div class="header">
+        <button class="back-btn" onclick="quitListen()">← 나가기</button>
+        <span id="listen-mode-title">운전 모드</span>
+    </div>
+    <div class="listen-container">
+        <div class="listen-progress" id="listen-progress">0 / 0</div>
+        <div class="listen-word" id="disp-listen-word">Ready</div>
+        <div class="listen-mean" id="disp-listen-mean">...</div>
+        <div class="player-controls">
+            <button class="ctrl-btn" onclick="prevListen()">⏮</button>
+            <button class="ctrl-btn play-btn" id="btn-play-toggle" onclick="toggleListen()">⏸</button>
+            <button class="ctrl-btn" onclick="nextListen()">⏭</button>
+        </div>
+        <p class="listen-note">* 화면이 꺼지면 소리가 멈출 수 있습니다.<br>화면을 계속 켜두세요.</p>
+    </div>
+</div>
+
+<!-- 학습 완료 모달 -->
+<div id="completion-modal" class="modal">
+    <div class="modal-content">
+        <h2>🎉 학습 완료!</h2>
+        <p>현재 구간의 카드를 모두 확인했습니다.</p>
+        <p id="result-msg" style="font-weight:700;"></p>
+        <button id="btn-continue-study" class="action-btn" onclick="continueNextBatch()" style="background:var(--green); display:none; margin-bottom:8px;">⏩ 다음 10개 계속하기</button>
+        <button class="action-btn" onclick="finishStudySession()">메인으로</button>
+    </div>
+</div>
+
+<!-- 학습 중 수정 모달 -->
+<div id="study-edit-modal" class="modal">
+    <div class="modal-content" style="text-align:left; max-width:340px;">
+        <h3 style="margin-top:0; text-align:center;">단어 수정</h3>
+        <label>단어</label><input type="text" id="edit-study-word">
+        <label>뜻</label><input type="text" id="edit-study-mean">
+        <label>암기법</label><input type="text" id="edit-study-method">
+        <label>참고</label><input type="text" id="edit-study-note">
+        <div class="btn-row" style="margin-top:10px;">
+            <button class="action-btn" onclick="saveStudyEdit()">저장</button>
+            <button class="action-btn" onclick="closeStudyEditModal()" style="background:#95a5a6;">취소</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ================================================================
+   iOS 호환 단어장 앱
+   주요 변경사항:
+   1. unlockAndStart() - iOS에서 TTS 활성화를 위한 사용자 제스처 처리
+   2. speakText() - onend 미발생 대비 fallback timeout 추가
+   3. resumeWorkaround - iOS speechSynthesis 자동 일시정지 버그 대응
+   4. exportData() - navigator.clipboard API 사용 (iOS 지원)
+   5. downloadSelfContainedHTML() - iOS 안내 메시지 추가
+================================================================ */
+
+    /* ── 데이터 초기화 ── */
+    let embeddedData = []; /* EMBEDDED_DATA_HERE */
+    let words = [];
+    try {
+        const local = localStorage.getItem('myWordBook');
+        if (embeddedData.length > 0) {
+            words = embeddedData;
+            localStorage.setItem('myWordBook', JSON.stringify(words));
+        } else if (local) {
+            words = JSON.parse(local);
+        }
+    } catch(e) { words = []; }
+
+    let studyQueue = [];
+    let currentIndex = 0;
+    let sessionUnknownCount = 0;
+    let editingIndex = null;
+    let isReverseMode = false;
+    let cardRevealed = false;
+    let currentBatchEndIndex = 0;
+
+    /* ── iOS TTS 잠금 해제 ──
+       iOS Safari에서 speechSynthesis.speak()는 반드시
+       사용자 제스처(touchend/click) 핸들러 내에서 최초 1회 호출해야 활성화됨 */
+    let speechUnlocked = false;
+
+    function unlockAndStart() {
+        // 빈 발화로 iOS TTS 잠금 해제
+        try {
+            const u = new SpeechSynthesisUtterance('');
+            u.volume = 0;
+            window.speechSynthesis.speak(u);
+            window.speechSynthesis.cancel();
+        } catch(e) {}
+        speechUnlocked = true;
+        document.getElementById('unlock-modal').classList.remove('open');
+        updateMainWordCount();
+    }
+
+    /* iOS speechSynthesis 자동 일시정지 버그 워크어라운드
+       iOS는 약 30초 후 speechSynthesis를 자동으로 pause시킴 */
+    let resumeWorkaroundInterval = null;
+
+    function startResumeWorkaround() {
+        stopResumeWorkaround();
+        resumeWorkaroundInterval = setInterval(() => {
+            if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+            }
+        }, 5000);
+    }
+
+    function stopResumeWorkaround() {
+        if (resumeWorkaroundInterval) {
+            clearInterval(resumeWorkaroundInterval);
+            resumeWorkaroundInterval = null;
+        }
+    }
+
+    /* ── 핵심 TTS 함수 (iOS 호환) ──
+       iOS에서 onend 이벤트가 불규칙하게 발생하는 문제를
+       fallback timeout으로 대응 */
+    function speakText(text, lang, onEndCallback) {
+        window.speechSynthesis.cancel();
+        if (!text || !text.trim()) {
+            if (onEndCallback) setTimeout(onEndCallback, 200);
+            return;
+        }
+
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = lang || 'en-US';
+        u.rate = 0.9;
+        u.pitch = 1;
+        u.volume = 1;
+
+        let finished = false;
+        const done = () => {
+            if (!finished) {
+                finished = true;
+                if (onEndCallback) onEndCallback();
+            }
+        };
+
+        u.onend   = done;
+        u.onerror = done;
+
+        // iOS fallback: 텍스트 길이 기반 예상 재생 시간 + 여유 시간
+        // 평균 말하기 속도 약 rate=0.9에서 ~80ms/글자, 최소 1.5초
+        const fallbackMs = Math.max(1500, text.length * 80 + 700);
+        setTimeout(done, fallbackMs);
+
+        window.speechSynthesis.speak(u);
+    }
+
+    /* ── 화면 전환 ── */
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if (id === 'main-screen') {
+            cancelEdit();
+            updateMainWordCount();
+        }
+    }
+
+    function goHome() { showScreen('main-screen'); }
+
+    function updateMainWordCount() {
+        document.getElementById('word-count-main').textContent = `단어 ${words.length}개`;
+    }
+
+    /* ── 데이터 저장 ── */
+    function saveWords() {
+        try { localStorage.setItem('myWordBook', JSON.stringify(words)); } catch(e) {}
+        updateWordList();
+        updateMainWordCount();
+    }
+
+    /* ── 단어 관리 화면 ── */
+    function showManageScreen() {
+        showScreen('manage-screen');
+        updateWordList();
+        cancelEdit();
+        switchTab('single');
+    }
+
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-tab'));
+        document.querySelectorAll('.input-group').forEach(g => g.style.display = 'none');
+        const tabMap = { single: 0, bulk: 1, list: 2 };
+        document.querySelectorAll('.tab')[tabMap[name]].classList.add('active-tab');
+        document.getElementById('tab-' + name).style.display = 'block';
+    }
+
+    /* ── 단어 입력 ── */
+    function addSingleWord() {
+        const w    = document.getElementById('input-word').value.trim();
+        const m    = document.getElementById('input-mean').value.trim();
+        const meth = document.getElementById('input-method').value.trim();
+        const n    = document.getElementById('input-note').value.trim();
+        if (!w || !m) { alert('단어와 뜻은 필수입니다!'); return; }
+
+        if (editingIndex !== null) {
+            words[editingIndex] = { word: w, mean: m, method: meth, note: n, isUnknown: words[editingIndex].isUnknown };
+            alert('수정되었습니다!');
+            cancelEdit();
+        } else {
+            words.push({ word: w, mean: m, method: meth, note: n, isUnknown: false });
+            alert('저장되었습니다!');
+            clearInputs();
+        }
+        saveWords();
+    }
+
+    function editWord(idx) {
+        const item = words[idx];
+        document.getElementById('input-word').value   = item.word;
+        document.getElementById('input-mean').value   = item.mean;
+        document.getElementById('input-method').value = item.method || '';
+        document.getElementById('input-note').value   = item.note   || '';
+        editingIndex = idx;
+        document.getElementById('btn-save-single').textContent = '수정 완료';
+        document.getElementById('btn-save-single').style.background = 'var(--orange)';
+        document.getElementById('edit-indicator').style.display = 'block';
+        document.getElementById('btn-cancel-edit').style.display = 'block';
+        switchTab('single');
+    }
+
+    function cancelEdit() {
+        editingIndex = null;
+        clearInputs();
+        document.getElementById('btn-save-single').textContent = '저장하기';
+        document.getElementById('btn-save-single').style.background = 'var(--primary)';
+        document.getElementById('edit-indicator').style.display = 'none';
+        document.getElementById('btn-cancel-edit').style.display = 'none';
+    }
+
+    function clearInputs() {
+        ['input-word','input-mean','input-method','input-note'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+    }
+
+    function addBulkWords() {
+        const wArr    = document.getElementById('bulk-word').value.split('\n');
+        const mArr    = document.getElementById('bulk-mean').value.split('\n');
+        const methArr = document.getElementById('bulk-method').value.split('\n');
+        const nArr    = document.getElementById('bulk-note').value.split('\n');
+        let count = 0;
+        for (let i = 0; i < wArr.length; i++) {
+            const w = wArr[i].trim();
+            if (w) {
+                words.push({
+                    word: w,
+                    mean:   (mArr[i]    || '').trim(),
+                    method: (methArr[i] || '').trim(),
+                    note:   (nArr[i]    || '').trim(),
+                    isUnknown: false
+                });
+                count++;
+            }
+        }
+        if (count > 0) {
+            saveWords();
+            alert(count + '개의 단어가 저장되었습니다.');
+            ['bulk-word','bulk-mean','bulk-method','bulk-note'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+        } else { alert('입력된 단어가 없습니다.'); }
+    }
+
+    /* ── 단어 목록 렌더링 ── */
+    function updateWordList() {
+        const container    = document.getElementById('word-list-container');
+        const onlyUnknown  = document.getElementById('filter-unknown').checked;
+        const searchText   = (document.getElementById('search-input').value || '').trim().toLowerCase();
+
+        let list = words;
+        if (onlyUnknown) list = list.filter(w => w.isUnknown);
+        if (searchText)  list = list.filter(w =>
+            w.word.toLowerCase().includes(searchText) || w.mean.toLowerCase().includes(searchText)
+        );
+
+        document.getElementById('word-count').textContent = list.length;
+        container.innerHTML = '';
+
+        if (list.length === 0) {
+            container.innerHTML = '<div style="padding:20px; text-align:center; color:#aaa;">표시할 단어가 없습니다.</div>';
+            return;
+        }
+
+        list.forEach(item => {
+            const orig = words.indexOf(item);
+            const div  = document.createElement('div');
+            div.className = 'word-item';
+            const badge = item.isUnknown ? '<span class="badge-unknown">모름</span>' : '';
+            div.innerHTML = `
+                <div class="word-text">
+                    <strong>${orig + 1}. ${item.word}</strong>${badge}<br>
+                    <span>${item.mean}</span>
+                </div>
+                <div class="btn-group">
+                    <button class="edit-btn"   onclick="editWord(${orig})">수정</button>
+                    <button class="delete-btn" onclick="deleteWord(${orig})">삭제</button>
+                </div>`;
+            container.appendChild(div);
+        });
+    }
+
+    function deleteWord(idx) {
+        if (editingIndex === idx) cancelEdit();
+        if (confirm('정말 삭제하시겠습니까?')) {
+            words.splice(idx, 1);
+            saveWords();
+            if (editingIndex !== null && editingIndex > idx) editingIndex--;
+        }
+    }
+
+    function clearAllData() {
+        if (confirm('모든 단어가 사라집니다! 정말 초기화할까요?')) {
+            words = [];
+            saveWords();
+            cancelEdit();
+        }
+    }
+
+    /* ── 공유 기능 ── */
+    function exportData() {
+        const json = JSON.stringify(words);
+        document.getElementById('data-area').value = json;
+
+        // iOS 호환 클립보드 복사
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(json)
+                .then(() => alert('코드가 복사되었습니다! 카톡이나 메시지로 친구에게 보내세요.'))
+                .catch(() => fallbackCopy(json));
+        } else {
+            fallbackCopy(json);
+        }
+    }
+
+    function fallbackCopy(text) {
+        const ta = document.getElementById('data-area');
+        ta.value = text;
+        ta.select();
+        ta.setSelectionRange(0, 99999); // iOS 대응
+        try {
+            document.execCommand('copy');
+            alert('코드가 복사되었습니다!');
+        } catch(e) {
+            alert('위 박스의 내용을 직접 길게 눌러 복사해주세요.');
+        }
+    }
+
+    function importData() {
+        const json = document.getElementById('data-area').value.trim();
+        if (!json) { alert('친구에게 받은 코드를 위 박스에 먼저 붙여넣어주세요.'); return; }
+        try {
+            const newWords = JSON.parse(json);
+            if (confirm(`주의: 현재 단어장이 초기화되고, ${newWords.length}개의 단어로 덮어씌웁니다. 진행할까요?`)) {
+                words = newWords;
+                saveWords();
+                alert('단어장이 변경되었습니다!');
+            }
+        } catch(e) { alert('올바르지 않은 코드입니다.'); }
+    }
+
+    function downloadFile() {
+        const json = JSON.stringify(words, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = 'my_wordbook_backup.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function downloadSelfContainedHTML() {
+        if (words.length === 0) { alert('저장할 단어가 없습니다.'); return; }
+        if (!confirm('단어 데이터를 포함한 새 파일을 다운로드합니다.\n이 파일을 친구에게 보내면 친구도 바로 단어를 볼 수 있습니다.')) return;
+
+        let html = document.documentElement.outerHTML;
+        const target      = 'let embeddedData = []; /* EMBEDDED_DATA_HERE */';
+        const replacement = `let embeddedData = ${JSON.stringify(words)}; /* EMBEDDED_DATA_HERE */`;
+        html = html.replace(target, replacement);
+
+        const blob = new Blob([html], { type: 'text/html' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = '친구에게보낼_단어장.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function triggerFileUpload() { document.getElementById('file-input').click(); }
+
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const newWords = JSON.parse(e.target.result);
+                if (confirm(`파일에서 ${newWords.length}개의 단어를 발견했습니다. 현재 단어장을 덮어씌울까요?`)) {
+                    words = newWords;
+                    saveWords();
+                    alert('복원되었습니다!');
+                }
+            } catch(e) { alert('파일 형식이 올바르지 않습니다.'); }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    /* ── 학습 모드 ── */
+    function startStudy(mode) {
+        if (words.length === 0) { alert('저장된 단어가 없습니다.'); return; }
+
+        isReverseMode = false;
+        let title = '';
+        let needShuffle = true;
+        currentBatchEndIndex = words.length;
+
+        if (mode === 'all' || mode === 'reverse-all') {
+            if (mode === 'reverse-all') isReverseMode = true;
+            const total = words.length;
+            if (total > 10) {
+                const input = prompt(`총 ${total}개의 단어가 있습니다.\n몇 번째 단어부터 학습할까요?\n(숫자 입력 시 거기서부터 10개 학습)`, '1');
+                if (input !== null && input.trim() !== '') {
+                    let startIdx = parseInt(input) - 1;
+                    if (isNaN(startIdx) || startIdx < 0) startIdx = 0;
+                    let endIdx = Math.min(startIdx + 10, total);
+                    if (startIdx >= total) { alert('단어 범위를 초과했습니다.'); return; }
+                    studyQueue = words.slice(startIdx, endIdx);
+                    title = isReverseMode ? `거꾸로 학습 (${startIdx+1}~${endIdx}번)` : `순서대로 학습 (${startIdx+1}~${endIdx}번)`;
+                    needShuffle = false;
+                    currentBatchEndIndex = endIdx;
+                } else {
+                    studyQueue = [...words];
+                    title = isReverseMode ? '전체 거꾸로 학습' : '전체 단어 학습';
+                    needShuffle = false;
+                }
+            } else {
+                studyQueue = [...words];
+                title = isReverseMode ? '전체 거꾸로 학습' : '전체 단어 학습';
+                needShuffle = false;
+            }
+        } else if (mode === 'unknown') {
+            studyQueue = words.filter(w => w.isUnknown);
+            title = '모르는 단어 학습';
+        } else if (mode === 'reverse-unknown') {
+            studyQueue = words.filter(w => w.isUnknown);
+            isReverseMode = true;
+            title = '모르는 단어 거꾸로 학습';
+        }
+
+        if ((mode === 'unknown' || mode === 'reverse-unknown') && studyQueue.length === 0) {
+            alert("'모른다'로 체크된 단어가 없습니다."); return;
+        }
+
+        document.getElementById('study-mode-title').textContent = title;
+        if (needShuffle) studyQueue.sort(() => Math.random() - 0.5);
+
+        currentIndex = 0;
+        sessionUnknownCount = 0;
+        showScreen('study-screen');
+        loadCard();
+    }
+
+    function loadCard() {
+        if (currentIndex >= studyQueue.length) {
+            document.getElementById('result-msg').textContent = `이번 구간에서 ${sessionUnknownCount}번 '모른다'를 눌렀습니다.`;
+            const btnCont = document.getElementById('btn-continue-study');
+            if (currentBatchEndIndex < words.length) {
+                btnCont.style.display = 'block';
+                btnCont.textContent = `⏩ 다음 10개 계속하기 (${currentBatchEndIndex + 1}번~)`;
+            } else {
+                btnCont.style.display = 'none';
+            }
+            document.getElementById('completion-modal').classList.add('open');
+            return;
+        }
+
+        cardRevealed = false;
+        const item = studyQueue[currentIndex];
+        const origIdx = words.indexOf(item) + 1;
+
+        if (isReverseMode) {
+            document.getElementById('study-main-text').textContent = item.mean;
+            document.getElementById('study-sub-text').textContent  = `${origIdx}. ${item.word}`;
+            document.getElementById('label-sub-text').textContent  = '단어';
+        } else {
+            document.getElementById('study-main-text').textContent = `${origIdx}. ${item.word}`;
+            document.getElementById('study-sub-text').textContent  = item.mean;
+            document.getElementById('label-sub-text').textContent  = '뜻';
+        }
+
+        document.getElementById('study-method').textContent  = item.method || '';
+        document.getElementById('study-note').textContent    = item.note   || '';
+        document.getElementById('study-details').style.display = 'none';
+        document.querySelector('.study-card').scrollTop = 0;
+
+        if (!isReverseMode) setTimeout(() => playSound(), 500);
+    }
+
+    function playSound() {
+        const item = studyQueue[currentIndex];
+        if (!item) return;
+        speakText(item.word, 'en-US', null);
+    }
+
+    function toggleCard() {
+        const details = document.getElementById('study-details');
+        if (details.style.display === 'none') {
+            details.style.display = 'block';
+            cardRevealed = true;
+            if (isReverseMode) speakText(studyQueue[currentIndex].word, 'en-US', null);
+        } else {
+            details.style.display = 'none';
+            cardRevealed = false;
+        }
+    }
+
+    function moveCard(dir) {
+        const ni = currentIndex + dir;
+        if (ni >= 0 && ni < studyQueue.length) {
+            currentIndex = ni;
+            loadCard();
+        }
+    }
+
+    function markKnow() {
+        const cur = studyQueue[currentIndex];
+        const idx = words.findIndex(w => w.word === cur.word && w.mean === cur.mean);
+        if (idx !== -1) { words[idx].isUnknown = false; saveWords(); }
+        currentIndex++;
+        loadCard();
+    }
+
+    function markUnknown() {
+        const cur = studyQueue[currentIndex];
+        const idx = words.findIndex(w => w.word === cur.word && w.mean === cur.mean);
+        if (idx !== -1) { words[idx].isUnknown = true; saveWords(); }
+        sessionUnknownCount++;
+        currentIndex++;
+        loadCard();
+    }
+
+    function quitStudy() {
+        if (confirm('학습을 중단하고 나갈까요?')) goHome();
+    }
+
+    function finishStudySession() {
+        document.getElementById('completion-modal').classList.remove('open');
+        goHome();
+    }
+
+    function continueNextBatch() {
+        const startIdx = currentBatchEndIndex;
+        const endIdx   = Math.min(startIdx + 10, words.length);
+        studyQueue = words.slice(startIdx, endIdx);
+        currentBatchEndIndex = endIdx;
+        currentIndex = 0;
+        document.getElementById('study-mode-title').textContent = `이어 학습 중 (${startIdx+1}~${endIdx}번)`;
+        document.getElementById('completion-modal').classList.remove('open');
+        loadCard();
+    }
+
+    /* ── 학습 중 수정 ── */
+    function openStudyEditModal() {
+        const item = studyQueue[currentIndex];
+        document.getElementById('edit-study-word').value   = item.word   || '';
+        document.getElementById('edit-study-mean').value   = item.mean   || '';
+        document.getElementById('edit-study-method').value = item.method || '';
+        document.getElementById('edit-study-note').value   = item.note   || '';
+        document.getElementById('study-edit-modal').classList.add('open');
+    }
+
+    function closeStudyEditModal() {
+        document.getElementById('study-edit-modal').classList.remove('open');
+    }
+
+    function saveStudyEdit() {
+        const w    = document.getElementById('edit-study-word').value.trim();
+        const m    = document.getElementById('edit-study-mean').value.trim();
+        const meth = document.getElementById('edit-study-method').value.trim();
+        const n    = document.getElementById('edit-study-note').value.trim();
+        if (!w || !m) { alert('단어와 뜻은 필수입니다.'); return; }
+
+        const cur = studyQueue[currentIndex];
+        cur.word = w; cur.mean = m; cur.method = meth; cur.note = n;
+
+        const idx = words.findIndex(wd => wd === cur);
+        if (idx !== -1) {
+            words[idx].word = w; words[idx].mean = m;
+            words[idx].method = meth; words[idx].note = n;
+            saveWords();
+        }
+
+        loadCard();
+        document.getElementById('study-details').style.display = 'block';
+        cardRevealed = true;
+        closeStudyEditModal();
+    }
+
+    /* ── 운전 모드 (iOS 호환) ── */
+    let listenQueue  = [];
+    let listenIndex  = 0;
+    let isListening  = false;
+    let listenTimer  = null;
+    let isListenReverse = false;
+
+    function startListenMode(mode) {
+        if (words.length === 0) { alert('저장된 단어가 없습니다.'); return; }
+
+        if (mode.includes('unknown')) {
+            listenQueue = words.filter(w => w.isUnknown);
+            if (listenQueue.length === 0) { alert("'모른다'로 체크된 단어가 없습니다."); return; }
+        } else {
+            listenQueue = [...words];
+        }
+
+        let startIdx = 0;
+        const count = listenQueue.length;
+        const input = prompt(`총 ${count}개의 단어가 있습니다.\n몇 번째 단어부터 들을까요?`, '1');
+        if (input !== null && input.trim() !== '') {
+            startIdx = parseInt(input) - 1;
+            if (isNaN(startIdx) || startIdx < 0) startIdx = 0;
+            if (startIdx >= count) { alert('단어 범위를 초과했습니다. 처음부터 재생합니다.'); startIdx = 0; }
+        }
+
+        listenIndex     = startIdx;
+        isListenReverse = mode.includes('reverse');
+
+        let titleText = '운전 모드';
+        if (mode.includes('unknown')) titleText += ' (모르는 단어)';
+        if (mode.includes('reverse')) titleText += ' (거꾸로)';
+        document.getElementById('listen-mode-title').textContent = titleText;
+
+        isListening = true;
+        showScreen('listen-screen');
+        startResumeWorkaround();
+        updateListenUI();
+        playListenSequence();
+    }
+
+    function updateListenUI() {
+        if (listenIndex >= listenQueue.length) return;
+        const item    = listenQueue[listenIndex];
+        const origIdx = words.indexOf(item) + 1;
+        document.getElementById('listen-progress').textContent    = `${listenIndex + 1} / ${listenQueue.length}`;
+        document.getElementById('disp-listen-word').textContent   = `${origIdx}. ${item.word}`;
+        document.getElementById('disp-listen-mean').textContent   = item.mean;
+        document.getElementById('btn-play-toggle').textContent    = isListening ? '⏸' : '▶';
+    }
+
+    /* iOS 호환 연속 재생:
+       speakText()의 fallback timeout 덕분에
+       onend 미발생 시에도 다음 단어로 넘어감 */
+    function playListenSequence() {
+        if (!isListening) return;
+        if (listenIndex >= listenQueue.length) {
+            if (confirm('모든 단어를 다 들었습니다. 다시 처음부터 들을까요?')) {
+                listenIndex = 0;
+                playListenSequence();
+            } else {
+                quitListen();
+            }
+            return;
+        }
+
+        updateListenUI();
+        const item      = listenQueue[listenIndex];
+        const firstText = isListenReverse ? item.mean : item.word;
+        const firstLang = isListenReverse ? 'ko-KR'  : 'en-US';
+        const secndText = isListenReverse ? item.word : item.mean;
+        const secndLang = isListenReverse ? 'en-US'  : 'ko-KR';
+
+        speakText(firstText, firstLang, () => {
+            if (!isListening) return;
+            listenTimer = setTimeout(() => {
+                if (!isListening) return;
+                speakText(secndText, secndLang, () => {
+                    if (!isListening) return;
+                    listenTimer = setTimeout(() => {
+                        listenIndex++;
+                        playListenSequence();
+                    }, 1500);
+                });
+            }, 800);
+        });
+    }
+
+    function toggleListen() {
+        isListening = !isListening;
+        updateListenUI();
+        if (isListening) {
+            playListenSequence();
+        } else {
+            window.speechSynthesis.cancel();
+            if (listenTimer) clearTimeout(listenTimer);
+        }
+    }
+
+    function prevListen() {
+        stopListenStep();
+        if (listenIndex > 0) listenIndex--;
+        isListening = true;
+        playListenSequence();
+    }
+
+    function nextListen() {
+        stopListenStep();
+        if (listenIndex < listenQueue.length - 1) listenIndex++;
+        isListening = true;
+        playListenSequence();
+    }
+
+    function stopListenStep() {
+        window.speechSynthesis.cancel();
+        if (listenTimer) clearTimeout(listenTimer);
+    }
+
+    function quitListen() {
+        isListening = false;
+        stopListenStep();
+        stopResumeWorkaround();
+        goHome();
+    }
+
+    /* ── 초기화 ── */
+    updateMainWordCount();
+</script>
+</body>
+</html>
